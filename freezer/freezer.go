@@ -9,6 +9,8 @@ type Freezer interface {
 	Productos() []*Producto
 	// Agregar me deja meter algo en el freezer
 	Agregar(*Producto)
+	// Quitar saca algo del freezer
+	Quitar(string)
 }
 
 // FreezerEfimero guarda las cosas pero por un ratito no más
@@ -28,6 +30,25 @@ func (f *FreezerEfímero) Productos() []*Producto {
 
 func (f *FreezerEfímero) Agregar(producto *Producto) {
 	f.productos = append(f.productos, producto)
+}
+
+func (f *FreezerEfímero) Quitar(nombreProducto string) {
+
+	index := -1
+
+	for i, producto := range f.productos {
+		if producto.nombre == nombreProducto {
+			index = i
+			break
+		}
+	}
+
+	if index != -1 {
+		nuevosProductos := make([]*Producto, 0)
+		nuevosProductos = append(nuevosProductos, f.productos[:index]...)
+
+		f.productos = append(nuevosProductos, f.productos[index+1:]...)
+	}
 }
 
 // Medida unidad de medida de los productos que guardo en el Freezer

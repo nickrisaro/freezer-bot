@@ -21,3 +21,13 @@ func TestPuedoAgregarUnaUnidadDeUnProducto(t *testing.T) {
 
 	assert.Equal(t, []*freezer.Producto{miProducto}, miFreezer.Productos(), "Esperaba que el freezer tenga una pizza")
 }
+
+func TestSePuedeSacarUnProductoDelFreezer(t *testing.T) {
+	miFreezer := freezer.NewFreezerEfímero()
+	miProducto := freezer.NewProducto("Pizza", 1.0, freezer.Unidad)
+	miFreezer.Agregar(miProducto)
+
+	miFreezer.Quitar("Pizza")
+
+	assert.Equal(t, []*freezer.Producto{}, miFreezer.Productos(), "Esperaba que el freezer esté vacío")
+}

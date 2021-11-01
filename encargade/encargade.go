@@ -1,6 +1,7 @@
 package encargade
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -16,7 +17,19 @@ func NewEncargade(miFreezer freezer.Freezer) *Encargade {
 }
 
 func (e *Encargade) QueCosasHayEnElFreezer() string {
-	return "El freezer está vacío"
+	productos := e.miFreezer.Productos()
+
+	if len(productos) == 0 {
+		return "El freezer está vacío"
+	}
+
+	inventario := "El freezer tiene:\n\n"
+
+	for _, producto := range productos {
+		inventario += fmt.Sprintf("- %s\n", producto.String())
+	}
+
+	return inventario
 }
 
 func (e *Encargade) Meter(producto string) error {

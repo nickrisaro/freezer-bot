@@ -22,7 +22,21 @@ func NewFreezer(identificador int64, nombre string) *Freezer {
 }
 
 func (f *Freezer) Agregar(producto *Producto) {
-	f.Productos = append(f.Productos, producto)
+	index := -1
+
+	for i, productoActual := range f.Productos {
+		if productoActual.Nombre == producto.Nombre {
+			index = i
+			break
+		}
+	}
+
+	if index == -1 {
+		f.Productos = append(f.Productos, producto)
+	} else {
+		productoAActualizar := f.Productos[index]
+		productoAActualizar.Cantidad += producto.Cantidad
+	}
 }
 
 func (f *Freezer) Quitar(nombreProducto string) {

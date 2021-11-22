@@ -31,6 +31,16 @@ func TestPuedoAgregarUnaUnidadDeUnProducto(t *testing.T) {
 	assert.Equal(t, []*freezer.Producto{miProducto}, miFreezer.Productos, "Esperaba que el freezer tenga una pizza")
 }
 
+func TestSiUnProductoYaEstáEnElFreezerAlAgregarloDeVueltaSeActualizaLaCAntidad(t *testing.T) {
+	miFreezer := freezer.NewFreezer(1, "Un Freezer")
+	miProducto := freezer.NewProducto("Pizza", 1.0, freezer.Unidad)
+	miFreezer.Agregar(miProducto)
+
+	miFreezer.Agregar(miProducto)
+
+	assert.Equal(t, []*freezer.Producto{freezer.NewProducto("Pizza", 2.0, freezer.Unidad)}, miFreezer.Productos, "Esperaba que el freezer tenga una pizza")
+}
+
 func TestSePuedeSacarUnProductoDelFreezer(t *testing.T) {
 	miFreezer := freezer.NewFreezer(1, "Un Freezer")
 	miProducto := freezer.NewProducto("Pizza", 1.0, freezer.Unidad)

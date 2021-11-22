@@ -40,11 +40,6 @@ func (e *Encargade) QueCosasHayEnEsteFreezer(identificador int64) string {
 }
 
 func (e *Encargade) MeterEnFreezer(identificador int64, producto string) error {
-	freezerDeLaDB := freezer.Freezer{Identificador: identificador}
-	resultado := e.miBaseDeDatos.Where(&freezerDeLaDB).First(&freezerDeLaDB)
-	if resultado.Error != nil {
-		return resultado.Error
-	}
 
 	partes := strings.Split(producto, ",")
 
@@ -54,6 +49,13 @@ func (e *Encargade) MeterEnFreezer(identificador int64, producto string) error {
 	}
 
 	elProducto := freezer.NewProducto(strings.TrimSpace(partes[0]), cantidad, stringAunidadDeMedida(strings.TrimSpace(partes[2])))
+
+	freezerDeLaDB := freezer.Freezer{Identificador: identificador}
+	resultado := e.miBaseDeDatos.Where(&freezerDeLaDB).Preload("Productos").First(&freezerDeLaDB)
+	if resultado.Error != nil {
+		return resultado.Error
+	}
+
 	freezerDeLaDB.Agregar(elProducto)
 	if err != nil {
 		return err

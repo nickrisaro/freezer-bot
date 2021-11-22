@@ -9,14 +9,14 @@ import (
 )
 
 func TestSiNoHayNadaEnElFreezerLeEncargadeSabeQueEstáVacío(t *testing.T) {
-	miFreezer := freezer.NewFreezerEfímero(1, "Un Freezer")
+	miFreezer := freezer.NewFreezer(1, "Un Freezer")
 	encargade := encargade.NewEncargade(miFreezer)
 
 	assert.Equal(t, "El freezer está vacío", encargade.QueCosasHayEnElFreezer(), "Esperaba que el freezer esté vacío")
 }
 
 func TestSiLeDigoALeEncargadeQueAgregueUnaPizzaLaAgrega(t *testing.T) {
-	miFreezer := freezer.NewFreezerEfímero(1, "Un Freezer")
+	miFreezer := freezer.NewFreezer(1, "Un Freezer")
 	encargade := encargade.NewEncargade(miFreezer)
 
 	err := encargade.Meter("Pizza, 1, unidad")
@@ -28,7 +28,7 @@ func TestSiLeDigoALeEncargadeQueAgregueUnaPizzaLaAgrega(t *testing.T) {
 }
 
 func TestSiHayUnaPizzaEnElFreezerLeEncargadeMeLoDice(t *testing.T) {
-	miFreezer := freezer.NewFreezerEfímero(1, "Un Freezer")
+	miFreezer := freezer.NewFreezer(1, "Un Freezer")
 	encargade := encargade.NewEncargade(miFreezer)
 	encargade.Meter("Pizza, 1, unidad")
 

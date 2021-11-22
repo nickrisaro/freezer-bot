@@ -9,10 +9,10 @@ import (
 )
 
 type Encargade struct {
-	miFreezer *freezer.FreezerEfímero
+	miFreezer *freezer.Freezer
 }
 
-func NewEncargade(miFreezer *freezer.FreezerEfímero) *Encargade {
+func NewEncargade(miFreezer *freezer.Freezer) *Encargade {
 	return &Encargade{miFreezer: miFreezer}
 }
 

@@ -8,32 +8,24 @@ import (
 
 // Freezer guarda productos y los mantiene refrigerados
 // Se pueden poner y sacar cosas en él y puedo fijarme que hay adentro
-type Freezer interface {
-	// Agregar me deja meter algo en el freezer
-	Agregar(*Producto)
-	// Quitar saca algo del freezer
-	Quitar(string)
-}
-
-// FreezerEfimero guarda las cosas pero por un ratito no más
-type FreezerEfímero struct {
+type Freezer struct {
 	gorm.Model
 	Identificador int64
 	Nombre        string
 	Productos     []*Producto
 }
 
-// NewFreezerEfímero construye un freezer efímero
-func NewFreezerEfímero(identificador int64, nombre string) *FreezerEfímero {
+// NewFreezer construye un freezer efímero
+func NewFreezer(identificador int64, nombre string) *Freezer {
 	productos := make([]*Producto, 0)
-	return &FreezerEfímero{Identificador: identificador, Nombre: nombre, Productos: productos}
+	return &Freezer{Identificador: identificador, Nombre: nombre, Productos: productos}
 }
 
-func (f *FreezerEfímero) Agregar(producto *Producto) {
+func (f *Freezer) Agregar(producto *Producto) {
 	f.Productos = append(f.Productos, producto)
 }
 
-func (f *FreezerEfímero) Quitar(nombreProducto string) {
+func (f *Freezer) Quitar(nombreProducto string) {
 
 	index := -1
 

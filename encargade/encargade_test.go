@@ -24,7 +24,7 @@ func TestSiLeDigoALeEncargadeQueAgregueUnaPizzaLaAgrega(t *testing.T) {
 	assert.Nil(t, err, "No esperaba un error")
 
 	miProducto := freezer.NewProducto("Pizza", 1.0, freezer.Unidad)
-	assert.Equal(t, []*freezer.Producto{miProducto}, miFreezer.Productos(), "Esperaba que haya una pizza")
+	assert.Equal(t, []*freezer.Producto{miProducto}, miFreezer.Productos, "Esperaba que haya una pizza")
 }
 
 func TestSiHayUnaPizzaEnElFreezerLeEncargadeMeLoDice(t *testing.T) {

@@ -9,12 +9,6 @@ import (
 // Freezer guarda productos y los mantiene refrigerados
 // Se pueden poner y sacar cosas en él y puedo fijarme que hay adentro
 type Freezer interface {
-	// Identificador es un número único para distinguir este freezer de otros
-	Identificador() int64
-	// Nombre para saber como se llama este freezer
-	Nombre() string
-	// Productos me dice que cosas tengo freezadas
-	Productos() []*Producto
 	// Agregar me deja meter algo en el freezer
 	Agregar(*Producto)
 	// Quitar saca algo del freezer
@@ -23,38 +17,27 @@ type Freezer interface {
 
 // FreezerEfimero guarda las cosas pero por un ratito no más
 type FreezerEfímero struct {
-	identificador int64
-	nombre        string
-	productos     []*Producto
+	gorm.Model
+	Identificador int64
+	Nombre        string
+	Productos     []*Producto
 }
 
 // NewFreezerEfímero construye un freezer efímero
-func NewFreezerEfímero(identificador int64, nombre string) Freezer {
+func NewFreezerEfímero(identificador int64, nombre string) *FreezerEfímero {
 	productos := make([]*Producto, 0)
-	return &FreezerEfímero{identificador: identificador, nombre: nombre, productos: productos}
-}
-
-func (f *FreezerEfímero) Identificador() int64 {
-	return f.identificador
-}
-
-func (f *FreezerEfímero) Nombre() string {
-	return f.nombre
-}
-
-func (f *FreezerEfímero) Productos() []*Producto {
-	return f.productos
+	return &FreezerEfímero{Identificador: identificador, Nombre: nombre, Productos: productos}
 }
 
 func (f *FreezerEfímero) Agregar(producto *Producto) {
-	f.productos = append(f.productos, producto)
+	f.Productos = append(f.Productos, producto)
 }
 
 func (f *FreezerEfímero) Quitar(nombreProducto string) {
 
 	index := -1
 
-	for i, producto := range f.productos {
+	for i, producto := range f.Productos {
 		if producto.Nombre == nombreProducto {
 			index = i
 			break
@@ -63,9 +46,9 @@ func (f *FreezerEfímero) Quitar(nombreProducto string) {
 
 	if index != -1 {
 		nuevosProductos := make([]*Producto, 0)
-		nuevosProductos = append(nuevosProductos, f.productos[:index]...)
+		nuevosProductos = append(nuevosProductos, f.Productos[:index]...)
 
-		f.productos = append(nuevosProductos, f.productos[index+1:]...)
+		f.Productos = append(nuevosProductos, f.Productos[index+1:]...)
 	}
 }
 

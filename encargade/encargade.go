@@ -9,15 +9,15 @@ import (
 )
 
 type Encargade struct {
-	miFreezer freezer.Freezer
+	miFreezer *freezer.FreezerEfímero
 }
 
-func NewEncargade(miFreezer freezer.Freezer) *Encargade {
+func NewEncargade(miFreezer *freezer.FreezerEfímero) *Encargade {
 	return &Encargade{miFreezer: miFreezer}
 }
 
 func (e *Encargade) QueCosasHayEnElFreezer() string {
-	productos := e.miFreezer.Productos()
+	productos := e.miFreezer.Productos
 
 	if len(productos) == 0 {
 		return "El freezer está vacío"

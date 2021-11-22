@@ -29,7 +29,7 @@ func (suite *EncargadeTestSuite) SetupTest() {
 	err = suite.db.AutoMigrate(&freezer.Freezer{}, &freezer.Producto{})
 	suite.NoError(err, "Debería ejecutar las migraciones")
 
-	suite.encargade = encargade.NewEncargadeConBaseDeDatos(suite.db)
+	suite.encargade = encargade.NewEncargade(suite.db)
 
 	suite.NotNil(suite.encargade, "Le encargade no debería ser nil")
 

@@ -22,6 +22,28 @@ func NewEncargade(miFreezer *freezer.Freezer) *Encargade {
 	return &Encargade{miFreezer: miFreezer}
 }
 
+func (e *Encargade) QueCosasHayEnEsteFreezer(identificador int64) string {
+	freezerDeLaDB := freezer.Freezer{Identificador: identificador}
+	resultado := e.miBaseDeDatos.Where(&freezerDeLaDB).Preload("Productos").First(&freezerDeLaDB)
+	if resultado.Error != nil {
+		return "No pude encontrar el freezer que me pedís"
+	}
+
+	productos := freezerDeLaDB.Productos
+
+	if len(productos) == 0 {
+		return "El freezer está vacío"
+	}
+
+	inventario := "El freezer tiene:\n\n"
+
+	for _, producto := range productos {
+		inventario += fmt.Sprintf("- %s\n", producto.String())
+	}
+
+	return inventario
+}
+
 func (e *Encargade) QueCosasHayEnElFreezer() string {
 	productos := e.miFreezer.Productos
 
@@ -45,13 +67,20 @@ func (e *Encargade) MeterEnFreezer(identificador int64, producto string) error {
 		return resultado.Error
 	}
 
-	e.miFreezer = &freezerDeLaDB
-	err := e.Meter(producto)
+	partes := strings.Split(producto, ",")
+
+	cantidad, err := strconv.ParseFloat(strings.TrimSpace(partes[1]), 64)
 	if err != nil {
 		return err
 	}
 
-	resultado = e.miBaseDeDatos.Save(e.miFreezer)
+	elProducto := freezer.NewProducto(strings.TrimSpace(partes[0]), cantidad, stringAunidadDeMedida(strings.TrimSpace(partes[2])))
+	freezerDeLaDB.Agregar(elProducto)
+	if err != nil {
+		return err
+	}
+
+	resultado = e.miBaseDeDatos.Save(freezerDeLaDB)
 	if resultado.Error != nil {
 		return resultado.Error
 	}

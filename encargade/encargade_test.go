@@ -15,9 +15,9 @@ const conexiónALaBase = "file::memory:?cache=shared"
 
 type EncargadeTestSuite struct {
 	suite.Suite
-	db                      *gorm.DB
-	encargadeConBaseDeDatos *encargade.Encargade
-	miFreezer               *freezer.Freezer
+	db        *gorm.DB
+	encargade *encargade.Encargade
+	miFreezer *freezer.Freezer
 }
 
 func (suite *EncargadeTestSuite) SetupTest() {
@@ -29,9 +29,9 @@ func (suite *EncargadeTestSuite) SetupTest() {
 	err = suite.db.AutoMigrate(&freezer.Freezer{}, &freezer.Producto{})
 	suite.NoError(err, "Debería ejecutar las migraciones")
 
-	suite.encargadeConBaseDeDatos = encargade.NewEncargadeConBaseDeDatos(suite.db)
+	suite.encargade = encargade.NewEncargadeConBaseDeDatos(suite.db)
 
-	suite.NotNil(suite.encargadeConBaseDeDatos, "Le encargade no debería ser nil")
+	suite.NotNil(suite.encargade, "Le encargade no debería ser nil")
 
 	suite.miFreezer = freezer.NewFreezer(int64(rand.Int()), "Un Freezer")
 	result := suite.db.Create(suite.miFreezer)
@@ -46,7 +46,7 @@ func (suite *EncargadeTestSuite) TestSiNoHayNadaEnElFreezerLeEncargadeSabeQueEst
 }
 
 func (suite *EncargadeTestSuite) TestSiLeDigoALeEncargadeQueAgregueUnaPizzaLaAgrega() {
-	err := suite.encargadeConBaseDeDatos.MeterEnFreezer(suite.miFreezer.Identificador, "Pizza, 1, unidad")
+	err := suite.encargade.MeterEnFreezer(suite.miFreezer.Identificador, "Pizza, 1, unidad")
 
 	suite.Nil(err, "No esperaba un error")
 
@@ -62,11 +62,11 @@ func (suite *EncargadeTestSuite) TestSiLeDigoALeEncargadeQueAgregueUnaPizzaLaAgr
 }
 
 func (suite *EncargadeTestSuite) TestSiHayUnaPizzaEnElFreezerLeEncargadeMeLoDice() {
-	err := suite.encargadeConBaseDeDatos.MeterEnFreezer(suite.miFreezer.Identificador, "Pizza, 1, unidad")
+	err := suite.encargade.MeterEnFreezer(suite.miFreezer.Identificador, "Pizza, 1, unidad")
 
 	suite.Nil(err, "No esperaba un error")
 
-	suite.Equal("El freezer tiene:\n\n- Pizza: 1.00 unidad(es)\n", suite.encargadeConBaseDeDatos.QueCosasHayEnElFreezer(), "Esperaba que le encargade me diga que hay una pizza")
+	suite.Equal("El freezer tiene:\n\n- Pizza: 1.00 unidad(es)\n", suite.encargade.QueCosasHayEnEsteFreezer(suite.miFreezer.Identificador), "Esperaba que le encargade me diga que hay una pizza")
 }
 
 func TestEncargadeTestSuite(t *testing.T) {

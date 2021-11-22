@@ -6,10 +6,16 @@ import (
 	"strings"
 
 	"github.com/nickrisaro/freezer-bot/freezer"
+	"gorm.io/gorm"
 )
 
 type Encargade struct {
+	miBaseDeDatos *gorm.DB
 	miFreezer *freezer.Freezer
+}
+
+func NewEncargadeConBaseDeDatos(baseDeDatos *gorm.DB) *Encargade {
+	return &Encargade{miBaseDeDatos: baseDeDatos}
 }
 
 func NewEncargade(miFreezer *freezer.Freezer) *Encargade {

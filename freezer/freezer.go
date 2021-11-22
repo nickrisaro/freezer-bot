@@ -75,6 +75,7 @@ func (s Medida) String() string {
 // Producto algo que se puede freezar
 type Producto struct {
 	gorm.Model
+	FreezerID      uint
 	Nombre         string
 	Cantidad       float64
 	UnidadDeMedida Medida

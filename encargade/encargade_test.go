@@ -40,9 +40,7 @@ func (suite *EncargadeTestSuite) SetupTest() {
 }
 
 func (suite *EncargadeTestSuite) TestSiNoHayNadaEnElFreezerLeEncargadeSabeQueEstáVacío() {
-	encargade := encargade.NewEncargade(suite.miFreezer)
-
-	suite.Equal("El freezer está vacío", encargade.QueCosasHayEnElFreezer(), "Esperaba que el freezer esté vacío")
+	suite.Equal("El freezer está vacío", suite.encargade.QueCosasHayEnEsteFreezer(suite.miFreezer.Identificador), "Esperaba que el freezer esté vacío")
 }
 
 func (suite *EncargadeTestSuite) TestSiLeDigoALeEncargadeQueAgregueUnaPizzaLaAgrega() {

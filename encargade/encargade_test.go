@@ -62,10 +62,11 @@ func (suite *EncargadeTestSuite) TestSiLeDigoALeEncargadeQueAgregueUnaPizzaLaAgr
 }
 
 func (suite *EncargadeTestSuite) TestSiHayUnaPizzaEnElFreezerLeEncargadeMeLoDice() {
-	encargade := encargade.NewEncargade(suite.miFreezer)
-	encargade.Meter("Pizza, 1, unidad")
+	err := suite.encargadeConBaseDeDatos.MeterEnFreezer(suite.miFreezer.Identificador, "Pizza, 1, unidad")
 
-	suite.Equal("El freezer tiene:\n\n- Pizza: 1.00 unidad(es)\n", encargade.QueCosasHayEnElFreezer(), "Esperaba que le encargade me diga que hay una pizza")
+	suite.Nil(err, "No esperaba un error")
+
+	suite.Equal("El freezer tiene:\n\n- Pizza: 1.00 unidad(es)\n", suite.encargadeConBaseDeDatos.QueCosasHayEnElFreezer(), "Esperaba que le encargade me diga que hay una pizza")
 }
 
 func TestEncargadeTestSuite(t *testing.T) {

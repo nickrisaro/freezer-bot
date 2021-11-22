@@ -1,43 +1,36 @@
 package freezer
 
-import "fmt"
+import (
+	"fmt"
+
+	"gorm.io/gorm"
+)
 
 // Freezer guarda productos y los mantiene refrigerados
 // Se pueden poner y sacar cosas en él y puedo fijarme que hay adentro
-type Freezer interface {
-	// Productos me dice que cosas tengo freezadas
-	Productos() []*Producto
-	// Agregar me deja meter algo en el freezer
-	Agregar(*Producto)
-	// Quitar saca algo del freezer
-	Quitar(string)
+type Freezer struct {
+	gorm.Model
+	Identificador int64
+	Nombre        string
+	Productos     []*Producto
 }
 
-// FreezerEfimero guarda las cosas pero por un ratito no más
-type FreezerEfímero struct {
-	productos []*Producto
-}
-
-// NewFreezerEfímero construye un freezer efímero
-func NewFreezerEfímero() Freezer {
+// NewFreezer construye un freezer efímero
+func NewFreezer(identificador int64, nombre string) *Freezer {
 	productos := make([]*Producto, 0)
-	return &FreezerEfímero{productos: productos}
+	return &Freezer{Identificador: identificador, Nombre: nombre, Productos: productos}
 }
 
-func (f *FreezerEfímero) Productos() []*Producto {
-	return f.productos
+func (f *Freezer) Agregar(producto *Producto) {
+	f.Productos = append(f.Productos, producto)
 }
 
-func (f *FreezerEfímero) Agregar(producto *Producto) {
-	f.productos = append(f.productos, producto)
-}
-
-func (f *FreezerEfímero) Quitar(nombreProducto string) {
+func (f *Freezer) Quitar(nombreProducto string) {
 
 	index := -1
 
-	for i, producto := range f.productos {
-		if producto.nombre == nombreProducto {
+	for i, producto := range f.Productos {
+		if producto.Nombre == nombreProducto {
 			index = i
 			break
 		}
@@ -45,9 +38,9 @@ func (f *FreezerEfímero) Quitar(nombreProducto string) {
 
 	if index != -1 {
 		nuevosProductos := make([]*Producto, 0)
-		nuevosProductos = append(nuevosProductos, f.productos[:index]...)
+		nuevosProductos = append(nuevosProductos, f.Productos[:index]...)
 
-		f.productos = append(nuevosProductos, f.productos[index+1:]...)
+		f.Productos = append(nuevosProductos, f.Productos[index+1:]...)
 	}
 }
 
@@ -81,16 +74,18 @@ func (s Medida) String() string {
 
 // Producto algo que se puede freezar
 type Producto struct {
-	nombre         string
-	cantidad       float64
-	unidadDeMedida Medida
+	gorm.Model
+	FreezerID      uint
+	Nombre         string
+	Cantidad       float64
+	UnidadDeMedida Medida
 }
 
 // NewProducto construye un nuevo producto para guardarlo en el freezer
 func NewProducto(nombre string, cantidad float64, unidadDeMedida Medida) *Producto {
-	return &Producto{nombre: nombre, cantidad: cantidad, unidadDeMedida: unidadDeMedida}
+	return &Producto{Nombre: nombre, Cantidad: cantidad, UnidadDeMedida: unidadDeMedida}
 }
 
 func (p *Producto) String() string {
-	return fmt.Sprintf("%s: %0.2f %s", p.nombre, p.cantidad, p.unidadDeMedida)
+	return fmt.Sprintf("%s: %0.2f %s", p.Nombre, p.Cantidad, p.UnidadDeMedida)
 }

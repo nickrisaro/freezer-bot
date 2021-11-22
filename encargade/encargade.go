@@ -61,7 +61,7 @@ func (e *Encargade) MeterEnFreezer(identificador int64, producto string) error {
 		return err
 	}
 
-	resultado = e.miBaseDeDatos.Save(freezerDeLaDB)
+	resultado = e.miBaseDeDatos.Session(&gorm.Session{FullSaveAssociations: true}).Save(freezerDeLaDB)
 	if resultado.Error != nil {
 		return resultado.Error
 	}

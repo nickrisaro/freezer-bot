@@ -67,6 +67,21 @@ func (suite *EncargadeTestSuite) TestSiHayUnaPizzaEnElFreezerLeEncargadeMeLoDice
 	suite.Equal("El freezer tiene:\n\n- Pizza: 1.00 unidad(es)\n", suite.encargade.QueCosasHayEnEsteFreezer(suite.miFreezer.Identificador), "Esperaba que le encargade me diga que hay una pizza")
 }
 
+func (suite *EncargadeTestSuite) TestSiLeDigoALeEncargadeQueAgregueUnaPizzaYDespuésOtraTengoDosPizzasEnElFreezer() {
+	suite.encargade.MeterEnFreezer(suite.miFreezer.Identificador, "Pizza, 1, unidad")
+	suite.encargade.MeterEnFreezer(suite.miFreezer.Identificador, "Pizza, 1, unidad")
+
+	freezerDeLaDB := freezer.Freezer{}
+	resultado := suite.db.Preload("Productos").First(&freezerDeLaDB, suite.miFreezer.ID)
+	suite.NoError(resultado.Error, "Debería haber encontrado el freezer")
+	suite.NotEmpty(freezerDeLaDB.Productos, "Debería tener productos")
+
+	miProducto := freezerDeLaDB.Productos[0]
+	suite.Equal("Pizza", miProducto.Nombre, "Esperaba una pizza")
+	suite.Equal(2.0, miProducto.Cantidad, "Esperaba una unidad")
+	suite.Equal(freezer.Unidad, miProducto.UnidadDeMedida, "Esperaba unidad como unidad de medida")
+}
+
 func TestEncargadeTestSuite(t *testing.T) {
 	suite.Run(t, new(EncargadeTestSuite))
 }

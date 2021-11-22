@@ -11,7 +11,7 @@ import (
 
 type Encargade struct {
 	miBaseDeDatos *gorm.DB
-	miFreezer *freezer.Freezer
+	miFreezer     *freezer.Freezer
 }
 
 func NewEncargadeConBaseDeDatos(baseDeDatos *gorm.DB) *Encargade {
@@ -36,6 +36,27 @@ func (e *Encargade) QueCosasHayEnElFreezer() string {
 	}
 
 	return inventario
+}
+
+func (e *Encargade) MeterEnFreezer(identificador int64, producto string) error {
+	freezerDeLaDB := freezer.Freezer{Identificador: identificador}
+	resultado := e.miBaseDeDatos.Where(&freezerDeLaDB).First(&freezerDeLaDB)
+	if resultado.Error != nil {
+		return resultado.Error
+	}
+
+	e.miFreezer = &freezerDeLaDB
+	err := e.Meter(producto)
+	if err != nil {
+		return err
+	}
+
+	resultado = e.miBaseDeDatos.Save(e.miFreezer)
+	if resultado.Error != nil {
+		return resultado.Error
+	}
+
+	return nil
 }
 
 func (e *Encargade) Meter(producto string) error {

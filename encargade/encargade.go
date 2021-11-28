@@ -54,6 +54,10 @@ func (e *Encargade) MeterEnFreezer(identificador int64, producto string) error {
 
 	partes := strings.Split(producto, ",")
 
+	if len(partes) < 3 {
+		return errors.New("formato de producto incorrecto")
+	}
+
 	cantidad, err := strconv.ParseFloat(strings.TrimSpace(partes[1]), 64)
 	if err != nil {
 		return err

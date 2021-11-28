@@ -79,15 +79,15 @@ func (e *Encargade) MeterEnFreezer(identificador int64, producto string) error {
 
 func stringAunidadDeMedida(unidadDeMedida string) freezer.Medida {
 	switch strings.ToUpper(unidadDeMedida) {
-	case "UNIDAD":
+	case "UNIDAD", "UNIDADES", "U":
 		return freezer.Unidad
-	case "KILO":
+	case "KILO", "KILOS", "K":
 		return freezer.Kilo
-	case "GRAMO":
+	case "GRAMO", "GRAMOS", "G":
 		return freezer.Gramo
-	case "LITRO":
+	case "LITRO", "LITROS", "L":
 		return freezer.Litro
-	case "MILILITRO":
+	case "MILILITRO", "MILILITROS", "M":
 		return freezer.Mililitro
 	}
 	return freezer.Otra

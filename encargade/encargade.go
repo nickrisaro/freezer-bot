@@ -1,6 +1,7 @@
 package encargade
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -15,6 +16,16 @@ type Encargade struct {
 
 func NewEncargade(baseDeDatos *gorm.DB) *Encargade {
 	return &Encargade{miBaseDeDatos: baseDeDatos}
+}
+
+func (e *Encargade) NuevoFreezer(identificador int64, nombre string) error {
+	freezerParaLaDB := freezer.NewFreezer(identificador, nombre)
+
+	resultado := e.miBaseDeDatos.Create(freezerParaLaDB)
+	if resultado.Error != nil && strings.Contains(resultado.Error.Error(), "UNIQUE") {
+		return errors.New("ya existe ese freezer")
+	}
+	return resultado.Error
 }
 
 func (e *Encargade) QueCosasHayEnEsteFreezer(identificador int64) string {
@@ -40,11 +51,6 @@ func (e *Encargade) QueCosasHayEnEsteFreezer(identificador int64) string {
 }
 
 func (e *Encargade) MeterEnFreezer(identificador int64, producto string) error {
-	freezerDeLaDB := freezer.Freezer{Identificador: identificador}
-	resultado := e.miBaseDeDatos.Where(&freezerDeLaDB).First(&freezerDeLaDB)
-	if resultado.Error != nil {
-		return resultado.Error
-	}
 
 	partes := strings.Split(producto, ",")
 
@@ -54,17 +60,17 @@ func (e *Encargade) MeterEnFreezer(identificador int64, producto string) error {
 	}
 
 	elProducto := freezer.NewProducto(strings.TrimSpace(partes[0]), cantidad, stringAunidadDeMedida(strings.TrimSpace(partes[2])))
-	freezerDeLaDB.Agregar(elProducto)
-	if err != nil {
-		return err
-	}
 
-	resultado = e.miBaseDeDatos.Save(freezerDeLaDB)
+	freezerDeLaDB := freezer.Freezer{Identificador: identificador}
+	resultado := e.miBaseDeDatos.Where(&freezerDeLaDB).Preload("Productos").First(&freezerDeLaDB)
 	if resultado.Error != nil {
 		return resultado.Error
 	}
 
-	return nil
+	freezerDeLaDB.Agregar(elProducto)
+
+	resultado = e.miBaseDeDatos.Session(&gorm.Session{FullSaveAssociations: true}).Save(freezerDeLaDB)
+	return resultado.Error
 }
 
 func stringAunidadDeMedida(unidadDeMedida string) freezer.Medida {

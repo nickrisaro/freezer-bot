@@ -20,7 +20,7 @@ func Configurar(urlPublica string, urlPrivada string, token string, encargade *e
 	})
 
 	b.Handle("/help", func(m *tb.Message) {
-		ayuda := "Hola soy le encargade de tu freezer, te puedo decir que hay en él, poner cosas nuevas y sacar las que ya están ahí\n"
+		ayuda := "Hola soy Andrew, el encargado de tu freezer, te puedo decir que hay en él, poner cosas nuevas y sacar las que ya están ahí\n"
 		ayuda += "Si querés agregar algo tenés que respetar el formato nobre,cantidad,unidad de medida\n"
 		ayuda += "Las unidades de medida pueden ser unidad, kilo, gramo, litro, mililitro u otra"
 		ayuda += "Empezá creando tu freezer con el comando /start"

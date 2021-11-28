@@ -39,6 +39,28 @@ func (suite *EncargadeTestSuite) SetupTest() {
 	suite.NotNil(suite.miFreezer.ID, "El freezer debería tener ID")
 }
 
+func (suite *EncargadeTestSuite) TestLeEncargadeCreaUnFreezer() {
+	IDNuevoFreezer := int64(rand.Int())
+	err := suite.encargade.NuevoFreezer(IDNuevoFreezer, "El freezer de Nick")
+
+	suite.Nil(err, "No esperaba un error")
+
+	freezerDeLaDB := freezer.Freezer{Identificador: IDNuevoFreezer}
+	resultado := suite.db.Preload("Productos").Where(freezerDeLaDB).First(&freezerDeLaDB)
+	suite.NoError(resultado.Error, "Debería haber encontrado el freezer")
+	suite.NotNil((freezerDeLaDB), "Esperaba un freezer")
+	suite.Empty(freezerDeLaDB.Productos, "No debería tener productos")
+	suite.Equal("El freezer de Nick", freezerDeLaDB.Nombre)
+}
+
+func (suite *EncargadeTestSuite) TestSiElFreezerYaExisteNoLoCreaDeNuevo() {
+	err := suite.encargade.NuevoFreezer(suite.miFreezer.Identificador, "El freezer de Nick")
+
+	suite.Error(err, "No debería haber creado un nuevo freezer")
+	suite.EqualError(err, "ya existe ese freezer")
+	//"UNIQUE constraint failed: freezers.identificador"
+}
+
 func (suite *EncargadeTestSuite) TestSiNoHayNadaEnElFreezerLeEncargadeSabeQueEstáVacío() {
 	suite.Equal("El freezer está vacío", suite.encargade.QueCosasHayEnEsteFreezer(suite.miFreezer.Identificador), "Esperaba que el freezer esté vacío")
 }

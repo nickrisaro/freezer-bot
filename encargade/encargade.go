@@ -1,6 +1,7 @@
 package encargade
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -15,6 +16,16 @@ type Encargade struct {
 
 func NewEncargade(baseDeDatos *gorm.DB) *Encargade {
 	return &Encargade{miBaseDeDatos: baseDeDatos}
+}
+
+func (e *Encargade) NuevoFreezer(identificador int64, nombre string) error {
+	freezerParaLaDB := freezer.NewFreezer(identificador, nombre)
+
+	resultado := e.miBaseDeDatos.Create(freezerParaLaDB)
+	if resultado.Error != nil && strings.Contains(resultado.Error.Error(), "UNIQUE") {
+		return errors.New("ya existe ese freezer")
+	}
+	return resultado.Error
 }
 
 func (e *Encargade) QueCosasHayEnEsteFreezer(identificador int64) string {
@@ -57,16 +68,9 @@ func (e *Encargade) MeterEnFreezer(identificador int64, producto string) error {
 	}
 
 	freezerDeLaDB.Agregar(elProducto)
-	if err != nil {
-		return err
-	}
 
 	resultado = e.miBaseDeDatos.Session(&gorm.Session{FullSaveAssociations: true}).Save(freezerDeLaDB)
-	if resultado.Error != nil {
-		return resultado.Error
-	}
-
-	return nil
+	return resultado.Error
 }
 
 func stringAunidadDeMedida(unidadDeMedida string) freezer.Medida {

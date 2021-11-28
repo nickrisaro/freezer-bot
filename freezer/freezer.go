@@ -10,7 +10,7 @@ import (
 // Se pueden poner y sacar cosas en él y puedo fijarme que hay adentro
 type Freezer struct {
 	gorm.Model
-	Identificador int64
+	Identificador int64 `gorm:"unique"`
 	Nombre        string
 	Productos     []*Producto
 }

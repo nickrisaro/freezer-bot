@@ -2,6 +2,7 @@ package freezer
 
 import (
 	"fmt"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -28,7 +29,7 @@ func (f *Freezer) Agregar(producto *Producto) {
 	index := -1
 
 	for i, productoActual := range f.Productos {
-		if productoActual.Nombre == producto.Nombre {
+		if strings.EqualFold(productoActual.Nombre, producto.Nombre) {
 			index = i
 			break
 		}
@@ -49,7 +50,7 @@ func (f *Freezer) Quitar(nombreProducto string, cantidad float64) {
 	index := -1
 
 	for i, producto := range f.Productos {
-		if producto.Nombre == nombreProducto {
+		if strings.EqualFold(producto.Nombre, nombreProducto) {
 			index = i
 			break
 		}

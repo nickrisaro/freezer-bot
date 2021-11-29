@@ -77,6 +77,36 @@ func (e *Encargade) MeterEnFreezer(identificador int64, producto string) error {
 	return resultado.Error
 }
 
+func (e *Encargade) SacarDelFreezer(identificador int64, producto string) error {
+
+	partes := strings.Split(producto, ",")
+
+	if len(partes) < 2 {
+		return errors.New("formato de producto incorrecto")
+	}
+
+	cantidad, err := strconv.ParseFloat(strings.TrimSpace(partes[1]), 64)
+	if err != nil {
+		return err
+	}
+
+	freezerDeLaDB := freezer.Freezer{Identificador: identificador}
+	resultado := e.miBaseDeDatos.Where(&freezerDeLaDB).Preload("Productos").First(&freezerDeLaDB)
+	if resultado.Error != nil {
+		return resultado.Error
+	}
+
+	freezerDeLaDB.Quitar(strings.TrimSpace(partes[0]), cantidad)
+
+	err = e.miBaseDeDatos.Model(&freezerDeLaDB).Association("Productos").Replace(freezerDeLaDB.Productos)
+	if err != nil {
+		return err
+	}
+
+	resultado = e.miBaseDeDatos.Session(&gorm.Session{FullSaveAssociations: true}).Save(freezerDeLaDB)
+	return resultado.Error
+}
+
 func stringAunidadDeMedida(unidadDeMedida string) freezer.Medida {
 	switch strings.ToUpper(unidadDeMedida) {
 	case "UNIDAD", "UNIDADES", "U":

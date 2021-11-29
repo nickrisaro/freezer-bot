@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 const conexiónALaBase = "file::memory:?cache=shared"
@@ -21,7 +22,7 @@ type EncargadeTestSuite struct {
 }
 
 func (suite *EncargadeTestSuite) SetupTest() {
-	db, err := gorm.Open(sqlite.Open(conexiónALaBase), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(conexiónALaBase), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
 	suite.NoError(err, "Debería conectarse a la base de datos")
 	suite.NotNil(db, "La base no debería ser nula")
 	suite.db = db
@@ -58,7 +59,6 @@ func (suite *EncargadeTestSuite) TestSiElFreezerYaExisteNoLoCreaDeNuevo() {
 
 	suite.Error(err, "No debería haber creado un nuevo freezer")
 	suite.EqualError(err, "ya existe ese freezer")
-	//"UNIQUE constraint failed: freezers.identificador"
 }
 
 func (suite *EncargadeTestSuite) TestSiNoHayNadaEnElFreezerLeEncargadeSabeQueEstáVacío() {
@@ -102,6 +102,54 @@ func (suite *EncargadeTestSuite) TestSiLeDigoALeEncargadeQueAgregueUnaPizzaYDesp
 	suite.Equal("Pizza", miProducto.Nombre, "Esperaba una pizza")
 	suite.Equal(2.0, miProducto.Cantidad, "Esperaba una unidad")
 	suite.Equal(freezer.Unidad, miProducto.UnidadDeMedida, "Esperaba unidad como unidad de medida")
+}
+
+func (suite *EncargadeTestSuite) TestSiLeDigoALeEncargadeQueAgregueDosPizzasYDespuésSaqueUnaTengoUnaPizzaEnElFreezer() {
+	suite.encargade.MeterEnFreezer(suite.miFreezer.Identificador, "Pizza, 1, unidad")
+	suite.encargade.MeterEnFreezer(suite.miFreezer.Identificador, "Pizza, 1, unidad")
+
+	err := suite.encargade.SacarDelFreezer(suite.miFreezer.Identificador, "Pizza, 1")
+	suite.Nil(err, "No esperaba un error")
+
+	freezerDeLaDB := freezer.Freezer{}
+	resultado := suite.db.Preload("Productos").First(&freezerDeLaDB, suite.miFreezer.ID)
+	suite.NoError(resultado.Error, "Debería haber encontrado el freezer")
+	suite.NotEmpty(freezerDeLaDB.Productos, "Debería tener productos")
+
+	miProducto := freezerDeLaDB.Productos[0]
+	suite.Equal("Pizza", miProducto.Nombre, "Esperaba una pizza")
+	suite.Equal(1.0, miProducto.Cantidad, "Esperaba una unidad")
+	suite.Equal(freezer.Unidad, miProducto.UnidadDeMedida, "Esperaba unidad como unidad de medida")
+}
+
+func (suite *EncargadeTestSuite) TestSiLeDigoALeEncargadeQueElimineUnaPizzaLaSacaDelFreezer() {
+	suite.encargade.MeterEnFreezer(suite.miFreezer.Identificador, "Pizza, 1, unidad")
+
+	err := suite.encargade.SacarDelFreezer(suite.miFreezer.Identificador, "Pizza, 1")
+	suite.Nil(err, "No esperaba un error")
+
+	freezerDeLaDB := freezer.Freezer{}
+	resultado := suite.db.Preload("Productos").First(&freezerDeLaDB, suite.miFreezer.ID)
+	suite.NoError(resultado.Error, "Debería haber encontrado el freezer")
+	suite.Empty(freezerDeLaDB.Productos, "No debería tener productos")
+}
+
+func (suite *EncargadeTestSuite) TestSiHayUnaPizzaYSalsaYLeDigoALeEncargadeQueElimineUnaPizzaSoloSacaLaPizzaDelFreezer() {
+	suite.encargade.MeterEnFreezer(suite.miFreezer.Identificador, "Pizza, 1, unidad")
+	suite.encargade.MeterEnFreezer(suite.miFreezer.Identificador, "Salsa, 200, gramos")
+
+	err := suite.encargade.SacarDelFreezer(suite.miFreezer.Identificador, "Pizza, 1")
+	suite.Nil(err, "No esperaba un error")
+
+	freezerDeLaDB := freezer.Freezer{}
+	resultado := suite.db.Preload("Productos").First(&freezerDeLaDB, suite.miFreezer.ID)
+	suite.NoError(resultado.Error, "Debería haber encontrado el freezer")
+	suite.NotEmpty(freezerDeLaDB.Productos, "Debería tener productos")
+
+	miProducto := freezerDeLaDB.Productos[0]
+	suite.Equal("Salsa", miProducto.Nombre, "Esperaba una salsa")
+	suite.Equal(200.0, miProducto.Cantidad, "Esperaba 200 gramos")
+	suite.Equal(freezer.Gramo, miProducto.UnidadDeMedida, "Esperaba gramo como unidad de medida")
 }
 
 func TestEncargadeTestSuite(t *testing.T) {

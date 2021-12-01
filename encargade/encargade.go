@@ -96,8 +96,22 @@ func (e *Encargade) SacarDelFreezer(identificador int64, producto string) error 
 		return resultado.Error
 	}
 
-	freezerDeLaDB.Quitar(strings.TrimSpace(partes[0]), cantidad)
+	productoActualizado := freezerDeLaDB.Quitar(strings.TrimSpace(partes[0]), cantidad)
+	if productoActualizado == nil {
+		return errors.New("no existe ese producto")
+	}
 
+	resultado = e.miBaseDeDatos.Save(productoActualizado)
+	if resultado.Error != nil {
+		return resultado.Error
+	}
+
+	if productoActualizado.Cantidad == 0.0 {
+		resultado = e.miBaseDeDatos.Delete(productoActualizado)
+		if resultado.Error != nil {
+			return resultado.Error
+		}
+	}
 	err = e.miBaseDeDatos.Model(&freezerDeLaDB).Association("Productos").Replace(freezerDeLaDB.Productos)
 	if err != nil {
 		return err

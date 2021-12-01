@@ -45,7 +45,7 @@ func (f *Freezer) Agregar(producto *Producto) {
 
 // Quitar remueve cantidad unidades del producto identificado por nombreProducto
 // Si luego de remover esas unidades no quedan más unidades de ese producto en el freezer lo elimina del freezer
-func (f *Freezer) Quitar(nombreProducto string, cantidad float64) {
+func (f *Freezer) Quitar(nombreProducto string, cantidad float64) *Producto {
 
 	index := -1
 
@@ -56,8 +56,9 @@ func (f *Freezer) Quitar(nombreProducto string, cantidad float64) {
 		}
 	}
 
+	var productoAActualizar *Producto = nil
 	if index != -1 {
-		productoAActualizar := f.Productos[index]
+		productoAActualizar = f.Productos[index]
 		productoAActualizar.Cantidad -= cantidad
 
 		if productoAActualizar.Cantidad <= 0.0 {
@@ -67,6 +68,8 @@ func (f *Freezer) Quitar(nombreProducto string, cantidad float64) {
 			f.Productos = append(nuevosProductos, f.Productos[index+1:]...)
 		}
 	}
+
+	return productoAActualizar
 }
 
 // Medida unidad de medida de los productos que guardo en el Freezer

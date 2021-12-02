@@ -23,9 +23,9 @@ func Configurar(urlPublica string, urlPrivada string, token string, encargade *e
 
 	b.Handle("/help", func(m *tb.Message) {
 		ayuda := "Hola soy Andrew, el encargado de tu freezer, te puedo decir que hay en él, poner cosas nuevas y sacar las que ya están ahí\n"
-		ayuda += "Si querés agregar algo tenés que respetar el formato nobre,cantidad,unidad de medida\n"
-		ayuda += "Si querés quitar algo tenés que respetar el formato nobre,cantidad\n"
-		ayuda += "Las unidades de medida pueden ser unidad, kilo, gramo, litro, mililitro u otra"
+		ayuda += "Si querés agregar algo tenés que respetar el formato nobre,cantidad,unidad de medida. Por ejemplo: /agregar ñoquis,500,gramo\n"
+		ayuda += "Si querés quitar algo tenés que respetar el formato nobre,cantidad. Por ejemplo: /quitar ñoquis,250\n"
+		ayuda += "Las unidades de medida pueden ser unidad, kilo, gramo, litro, mililitro u otra\n"
 		ayuda += "Empezá creando tu freezer con el comando /start"
 		b.Send(m.Chat, ayuda)
 	})
@@ -48,7 +48,7 @@ func Configurar(urlPublica string, urlPrivada string, token string, encargade *e
 
 		err := encargade.MeterEnFreezer(m.Chat.ID, productoAAgregar)
 		if err != nil {
-			b.Send(m.Chat, "Ups, no pude agregar el producto a tu freezer, revisá el formato o probá más tarde")
+			b.Send(m.Chat, "Ups, no pude agregar el producto a tu freezer, revisá el formato o probá más tarde\nUso correcto /agregar milanesas,1,unidad")
 		} else {
 			b.Send(m.Chat, "Listo, ya agregué comida a tu freezer, fijate lo que hay con /listar")
 		}
@@ -62,7 +62,7 @@ func Configurar(urlPublica string, urlPrivada string, token string, encargade *e
 			if errors.Is(err, errors.New("no existe ese producto")) {
 				b.Send(m.Chat, "Ups, no encontré ese producto en tu freezer, revisá el nombre")
 			} else {
-				b.Send(m.Chat, "Ups, no pude sacar el producto de tu freezer, revisá el formato o probá más tarde")
+				b.Send(m.Chat, "Ups, no pude sacar el producto de tu freezer, revisá el formato o probá más tarde\nUso correcto /quitar milanesas,1")
 			}
 		} else {
 			b.Send(m.Chat, "Listo, ya saqué comida de tu freezer, fijate lo que hay con /listar")

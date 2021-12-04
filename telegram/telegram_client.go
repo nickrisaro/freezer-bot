@@ -23,8 +23,8 @@ func Configurar(urlPublica string, urlPrivada string, token string, encargade *e
 
 	b.Handle("/help", func(m *tb.Message) {
 		ayuda := "Hola soy Andrew, el encargado de tu freezer, te puedo decir que hay en él, poner cosas nuevas y sacar las que ya están ahí\n"
-		ayuda += "Si querés agregar algo tenés que respetar el formato nobre,cantidad,unidad de medida. Por ejemplo: /agregar ñoquis,500,gramo\n"
-		ayuda += "Si querés quitar algo tenés que respetar el formato nobre,cantidad. Por ejemplo: /quitar ñoquis,250\n"
+		ayuda += "Si querés agregar algo tenés que respetar el formato nombre,cantidad,unidad de medida. Por ejemplo: /agregar ñoquis,500,gramo\n"
+		ayuda += "Si querés quitar algo tenés que respetar el formato nombre,cantidad. Por ejemplo: /quitar ñoquis,250\n"
 		ayuda += "Las unidades de medida pueden ser unidad, kilo, gramo, litro, mililitro u otra\n"
 		ayuda += "Empezá creando tu freezer con el comando /start"
 		b.Send(m.Chat, ayuda)

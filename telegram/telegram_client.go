@@ -26,11 +26,19 @@ func Configurar(urlPublica string, urlPrivada string, token string, encargade *e
 		ayuda += "Si querés agregar algo tenés que respetar el formato nombre,cantidad,unidad de medida. Por ejemplo: /agregar ñoquis,500,gramo\n"
 		ayuda += "Si querés quitar algo tenés que respetar el formato nombre,cantidad. Por ejemplo: /quitar ñoquis,250\n"
 		ayuda += "Las unidades de medida pueden ser unidad, kilo, gramo, litro, mililitro u otra\n"
-		ayuda += "Empezá creando tu freezer con el comando /start"
+		ayuda += "Empezá creando tu freezer con el comando /crear"
 		b.Send(m.Chat, ayuda)
 	})
 
 	b.Handle("/start", func(m *tb.Message) {
+		ayuda := "Hola soy Andrew, el encargado de tu freezer, te puedo decir que hay en él, poner cosas nuevas y sacar las que ya están ahí\n"
+		ayuda += "Me podés hablar en privado o agregar a un grupo para que varias personas sepan que hay en el freezer!\n"
+		ayuda += "Si tenés alguna duda me podés pedir ayuda con el comando /help\n"
+		ayuda += "Empezá creando tu freezer con el comando /crear"
+		b.Send(m.Chat, ayuda)
+	})
+
+	b.Handle("/crear", func(m *tb.Message) {
 		nombreDelFreezer := m.Chat.Title
 		if len(nombreDelFreezer) == 0 {
 			nombreDelFreezer = m.Chat.FirstName + " " + m.Chat.LastName

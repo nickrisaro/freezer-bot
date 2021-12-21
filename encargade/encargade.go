@@ -71,9 +71,9 @@ func (e *Encargade) MeterEnFreezer(identificador int64, producto string) error {
 		return resultado.Error
 	}
 
-	freezerDeLaDB.Agregar(elProducto)
+	elProducto = freezerDeLaDB.Agregar(elProducto)
 
-	resultado = e.miBaseDeDatos.Session(&gorm.Session{FullSaveAssociations: true}).Save(freezerDeLaDB)
+	resultado = e.miBaseDeDatos.Save(elProducto)
 	return resultado.Error
 }
 

@@ -24,32 +24,45 @@ func TestInicialmenteElFreezerEstáVacío(t *testing.T) {
 
 func TestPuedoAgregarUnaUnidadDeUnProducto(t *testing.T) {
 	miFreezer := freezer.NewFreezer(1, "Un Freezer")
+	miFreezer.ID = 1
 	miProducto := freezer.NewProducto("Pizza", 1.0, freezer.Unidad)
 
-	miFreezer.Agregar(miProducto)
+	productoAgregado := miFreezer.Agregar(miProducto)
 
 	assert.Equal(t, []*freezer.Producto{miProducto}, miFreezer.Productos, "Esperaba que el freezer tenga una pizza")
+	assert.Equal(t, "Pizza", productoAgregado.Nombre, "El producto no tiene el nombre esperado")
+	assert.Equal(t, miFreezer.ID, productoAgregado.FreezerID, "El producto no tiene el nombre esperado")
 }
 
 func TestSiUnProductoYaEstáEnElFreezerAlAgregarloDeVueltaSeActualizaLaCantidad(t *testing.T) {
 	miFreezer := freezer.NewFreezer(1, "Un Freezer")
+	miFreezer.ID = 1
 	miProducto := freezer.NewProducto("Pizza", 1.0, freezer.Unidad)
 	miFreezer.Agregar(miProducto)
 
-	miFreezer.Agregar(miProducto)
+	productoAgregado := miFreezer.Agregar(miProducto)
 
-	assert.Equal(t, []*freezer.Producto{freezer.NewProducto("Pizza", 2.0, freezer.Unidad)}, miFreezer.Productos, "Esperaba que el freezer tenga una pizza")
+	productoEsperado := freezer.NewProducto("Pizza", 2.0, freezer.Unidad)
+	productoEsperado.FreezerID = miFreezer.ID
+
+	assert.Equal(t, []*freezer.Producto{productoEsperado}, miFreezer.Productos, "Esperaba que el freezer tenga una pizza")
+	assert.Equal(t, productoEsperado, productoAgregado, "El producto agregado no es el esperado")
 }
 
 func TestSiUnProductoYaEstáEnElFreezerAlAgregarloEnMinúsculasSeActualizaLaCantidad(t *testing.T) {
 	miFreezer := freezer.NewFreezer(1, "Un Freezer")
+	miFreezer.ID = 1
 	miProducto := freezer.NewProducto("Pizza", 1.0, freezer.Unidad)
 	miFreezer.Agregar(miProducto)
 
 	miProductoEnMinúsuclas := freezer.NewProducto("pizza", 1.0, freezer.Unidad)
-	miFreezer.Agregar(miProductoEnMinúsuclas)
+	productoAgregado := miFreezer.Agregar(miProductoEnMinúsuclas)
 
-	assert.Equal(t, []*freezer.Producto{freezer.NewProducto("Pizza", 2.0, freezer.Unidad)}, miFreezer.Productos, "Esperaba que el freezer tenga una pizza")
+	productoEsperado := freezer.NewProducto("Pizza", 2.0, freezer.Unidad)
+	productoEsperado.FreezerID = miFreezer.ID
+
+	assert.Equal(t, []*freezer.Producto{productoEsperado}, miFreezer.Productos, "Esperaba que el freezer tenga una pizza")
+	assert.Equal(t, productoEsperado, productoAgregado, "El producto agregado no es el esperado")
 }
 
 func TestSePuedeSacarUnProductoDelFreezer(t *testing.T) {

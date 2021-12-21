@@ -25,7 +25,7 @@ func NewFreezer(identificador int64, nombre string) *Freezer {
 // Agregar agrega un producto al freezer.
 // Si el producto ya estaba en el freezer se suman las cantidades
 // Asume que las cantidades son en la misma unidad
-func (f *Freezer) Agregar(producto *Producto) {
+func (f *Freezer) Agregar(producto *Producto) *Producto {
 	index := -1
 
 	for i, productoActual := range f.Productos {
@@ -35,12 +35,16 @@ func (f *Freezer) Agregar(producto *Producto) {
 		}
 	}
 
+	var productoAActualizar *Producto = producto
 	if index == -1 {
 		f.Productos = append(f.Productos, producto)
 	} else {
-		productoAActualizar := f.Productos[index]
+		productoAActualizar = f.Productos[index]
 		productoAActualizar.Cantidad += producto.Cantidad
 	}
+	productoAActualizar.FreezerID = f.ID
+
+	return productoAActualizar
 }
 
 // Quitar remueve cantidad unidades del producto identificado por nombreProducto

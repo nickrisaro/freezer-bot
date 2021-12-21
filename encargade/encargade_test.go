@@ -142,7 +142,11 @@ func (suite *EncargadeTestSuite) TestSiLeDigoALeEncargadeQueElimineUnaPizzaLaSac
 	freezerDeLaDB := freezer.Freezer{}
 	resultado := suite.db.Preload("Productos").First(&freezerDeLaDB, suite.miFreezer.ID)
 	suite.NoError(resultado.Error, "Debería haber encontrado el freezer")
-	suite.Empty(freezerDeLaDB.Productos, "No debería tener productos")
+	suite.NotEmpty(freezerDeLaDB.Productos, "Debería tener productos")
+
+	miProducto := freezerDeLaDB.Productos[0]
+	suite.Equal("Pizza", miProducto.Nombre, "Esperaba una pizza")
+	suite.Equal(0.0, miProducto.Cantidad, "Esperaba 0 unidades")
 }
 
 func (suite *EncargadeTestSuite) TestSiLeDigoALeEncargadeQueElimineMenosUnaPizzaNoLaSacaDelFreezer() {
@@ -175,9 +179,23 @@ func (suite *EncargadeTestSuite) TestSiHayUnaPizzaYSalsaYLeDigoALeEncargadeQueEl
 	suite.NotEmpty(freezerDeLaDB.Productos, "Debería tener productos")
 
 	miProducto := freezerDeLaDB.Productos[0]
+	suite.Equal("Pizza", miProducto.Nombre, "Esperaba una pizza")
+	suite.Equal(0.0, miProducto.Cantidad, "Esperaba 0 unidades")
+	suite.Equal(freezer.Unidad, miProducto.UnidadDeMedida, "Esperaba unidad como unidad de medida")
+
+	miProducto = freezerDeLaDB.Productos[1]
 	suite.Equal("Salsa", miProducto.Nombre, "Esperaba una salsa")
 	suite.Equal(200.0, miProducto.Cantidad, "Esperaba 200 gramos")
 	suite.Equal(freezer.Gramo, miProducto.UnidadDeMedida, "Esperaba gramo como unidad de medida")
+}
+
+func (suite *EncargadeTestSuite) TestSiHayUnaPizzaYSalsaYLeDigoALeEncargadeQueElimineLaSalsaLuegoMeDiceQueSoloHayPizza() {
+	suite.encargade.MeterEnFreezer(suite.miFreezer.Identificador, "Pizza, 1, unidad")
+	suite.encargade.MeterEnFreezer(suite.miFreezer.Identificador, "Salsa, 200, gramos")
+
+	suite.encargade.SacarDelFreezer(suite.miFreezer.Identificador, "Salsa, 200")
+
+	suite.Equal("El freezer tiene:\n\n- Pizza: 1.00 unidad(es)\n", suite.encargade.QueCosasHayEnEsteFreezer(suite.miFreezer.Identificador), "Esperaba que le encargade me diga que hay una pizza")
 }
 
 func TestEncargadeTestSuite(t *testing.T) {

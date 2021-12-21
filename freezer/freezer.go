@@ -66,6 +66,7 @@ func (f *Freezer) Quitar(nombreProducto string, cantidad float64) *Producto {
 		productoAActualizar.Cantidad -= cantidad
 
 		if productoAActualizar.Cantidad <= 0.0 {
+			productoAActualizar.Cantidad = 0
 			nuevosProductos := make([]*Producto, 0)
 			nuevosProductos = append(nuevosProductos, f.Productos[:index]...)
 

@@ -97,6 +97,16 @@ func TestSiSacoMásDeLoQueHayEliminaElProducto(t *testing.T) {
 	assert.Equal(t, []*freezer.Producto{}, miFreezer.Productos, "Esperaba que el freezer esté vacío")
 }
 
+func TestSiSacoMásDeLoQueHayElProductoRetornadoTieneCeroEnLaCantidad(t *testing.T) {
+	miFreezer := freezer.NewFreezer(1, "Un Freezer")
+	miProducto := freezer.NewProducto("Pizza", 2.0, freezer.Unidad)
+	miFreezer.Agregar(miProducto)
+
+	productoQuitado := miFreezer.Quitar("Pizza", 3.0)
+
+	assert.Equal(t, float64(0), productoQuitado.Cantidad, "Esperaba que el producto esté en cero")
+}
+
 func TestSiQuitoUnProductoEnMinúsculasSeReduceLaCantidad(t *testing.T) {
 	miFreezer := freezer.NewFreezer(1, "Un Freezer")
 	miProducto := freezer.NewProducto("Pizza", 2.0, freezer.Unidad)

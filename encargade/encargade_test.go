@@ -81,6 +81,17 @@ func (suite *EncargadeTestSuite) TestSiLeDigoALeEncargadeQueAgregueUnaPizzaLaAgr
 	suite.Equal(freezer.Unidad, miProducto.UnidadDeMedida, "Esperaba unidad como unidad de medida")
 }
 
+func (suite *EncargadeTestSuite) TestSiLeDigoALeEncargadeQueAgregueMenosUnaPizzaNoLaAgrega() {
+	err := suite.encargade.MeterEnFreezer(suite.miFreezer.Identificador, "Pizza,-1, unidad")
+
+	suite.Error(err, "Esperaba un error")
+
+	freezerDeLaDB := freezer.Freezer{}
+	resultado := suite.db.Preload("Productos").First(&freezerDeLaDB, suite.miFreezer.ID)
+	suite.NoError(resultado.Error, "Debería haber encontrado el freezer")
+	suite.Empty(freezerDeLaDB.Productos, "Debería tener productos")
+}
+
 func (suite *EncargadeTestSuite) TestSiHayUnaPizzaEnElFreezerLeEncargadeMeLoDice() {
 	err := suite.encargade.MeterEnFreezer(suite.miFreezer.Identificador, "Pizza, 1, unidad")
 
@@ -132,6 +143,23 @@ func (suite *EncargadeTestSuite) TestSiLeDigoALeEncargadeQueElimineUnaPizzaLaSac
 	resultado := suite.db.Preload("Productos").First(&freezerDeLaDB, suite.miFreezer.ID)
 	suite.NoError(resultado.Error, "Debería haber encontrado el freezer")
 	suite.Empty(freezerDeLaDB.Productos, "No debería tener productos")
+}
+
+func (suite *EncargadeTestSuite) TestSiLeDigoALeEncargadeQueElimineMenosUnaPizzaNoLaSacaDelFreezer() {
+	suite.encargade.MeterEnFreezer(suite.miFreezer.Identificador, "Pizza, 1, unidad")
+
+	err := suite.encargade.SacarDelFreezer(suite.miFreezer.Identificador, "Pizza, -1")
+	suite.Error(err, "Esperaba un error")
+
+	freezerDeLaDB := freezer.Freezer{}
+	resultado := suite.db.Preload("Productos").First(&freezerDeLaDB, suite.miFreezer.ID)
+	suite.NoError(resultado.Error, "Debería haber encontrado el freezer")
+	suite.NotEmpty(freezerDeLaDB.Productos, "No debería tener productos")
+
+	miProducto := freezerDeLaDB.Productos[0]
+	suite.Equal("Pizza", miProducto.Nombre, "Esperaba una pizza")
+	suite.Equal(1.0, miProducto.Cantidad, "Esperaba una unidad")
+	suite.Equal(freezer.Unidad, miProducto.UnidadDeMedida, "Esperaba unidad como unidad de medida")
 }
 
 func (suite *EncargadeTestSuite) TestSiHayUnaPizzaYSalsaYLeDigoALeEncargadeQueElimineUnaPizzaSoloSacaLaPizzaDelFreezer() {

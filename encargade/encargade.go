@@ -63,6 +63,10 @@ func (e *Encargade) MeterEnFreezer(identificador int64, producto string) error {
 		return err
 	}
 
+	if cantidad <= 0 {
+		return fmt.Errorf("cantidadNegativa")
+	}
+
 	elProducto := freezer.NewProducto(strings.TrimSpace(partes[0]), cantidad, stringAunidadDeMedida(strings.TrimSpace(partes[2])))
 
 	freezerDeLaDB := freezer.Freezer{Identificador: identificador}
@@ -88,6 +92,10 @@ func (e *Encargade) SacarDelFreezer(identificador int64, producto string) error 
 	cantidad, err := strconv.ParseFloat(strings.TrimSpace(partes[1]), 64)
 	if err != nil {
 		return err
+	}
+
+	if cantidad <= 0 {
+		return fmt.Errorf("cantidadNegativa")
 	}
 
 	freezerDeLaDB := freezer.Freezer{Identificador: identificador}

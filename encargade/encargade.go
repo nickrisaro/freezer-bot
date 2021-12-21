@@ -98,7 +98,7 @@ func (e *Encargade) SacarDelFreezer(identificador int64, producto string) error 
 
 	productoActualizado := freezerDeLaDB.Quitar(strings.TrimSpace(partes[0]), cantidad)
 	if productoActualizado == nil {
-		return errors.New("no existe ese producto")
+		return errors.New("noExisteProducto")
 	}
 
 	resultado = e.miBaseDeDatos.Save(productoActualizado)

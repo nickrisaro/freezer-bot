@@ -1,8 +1,6 @@
 package telegram
 
 import (
-	"errors"
-
 	"github.com/nickrisaro/freezer-bot/encargade"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -67,7 +65,7 @@ func Configurar(urlPublica string, urlPrivada string, token string, encargade *e
 
 		err := encargade.SacarDelFreezer(m.Chat.ID, productoAQuitar)
 		if err != nil {
-			if errors.Is(err, errors.New("no existe ese producto")) {
+			if err.Error() == "noExisteProducto" {
 				b.Send(m.Chat, "Ups, no encontré ese producto en tu freezer, revisá el nombre")
 			} else {
 				b.Send(m.Chat, "Ups, no pude sacar el producto de tu freezer, revisá el formato o probá más tarde\nUso correcto /quitar milanesas,1")
